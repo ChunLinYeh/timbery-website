@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIMBERY 費用試算 | 裝修報價估算系統</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --yellow:#FDB91A;
+  --black:#2D2D2D;
+  --warm:#F5F5F5;
+  --text:#333;
+  --gray:#666;
+  --lgray:#999;
+  --border:#E0E0E0;
+}
+body{font-family:'Noto Sans TC',sans-serif;background:white;color:var(--text);line-height:1.6;}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* NAV */
+.navbar{background:var(--black);position:sticky;top:0;z-index:1000;border-bottom:3px solid var(--yellow);}
+.nav-container{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:68px;}
+.logo{font-family:'Fredoka',sans-serif;font-size:30px;color:white;font-weight:700;letter-spacing:-1px;}
+.progress-bar{display:flex;gap:10px;}
+.progress-step{width:38px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;transition:all 0.3s;}
+.progress-step.active{background:var(--yellow);}
+
+/* PAGE 1 */
+.form-page-centered{min-height:calc(100vh - 68px);background:var(--warm);display:flex;align-items:flex-start;justify-content:center;padding:56px 24px 80px;}
+.form-card{background:white;border-radius:14px;box-shadow:0 4px 28px rgba(0,0,0,0.08);width:100%;max-width:740px;padding:52px 56px;}
+.form-card-header{text-align:center;margin-bottom:44px;padding-bottom:28px;border-bottom:2px solid var(--warm);}
+.form-card-logo{font-family:'Fredoka',sans-serif;font-size:24px;color:var(--yellow);font-weight:700;margin-bottom:8px;}
+.form-card-title{font-family:'Fredoka',sans-serif;font-size:32px;color:var(--black);font-weight:700;margin-bottom:6px;}
+.form-card-desc{font-size:13px;color:var(--gray);}
+.form-section{margin-bottom:36px;}
+.section-label{font-size:11px;font-weight:700;color:var(--lgray);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.input-group{margin-bottom:16px;}
+.input-label{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;display:block;}
+.input-field{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:8px;font-size:14px;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;background:white;}
+.input-field:focus{outline:none;border-color:var(--yellow);box-shadow:0 0 0 3px rgba(253,185,26,0.1);}
+.checkbox-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.checkbox-card{position:relative;}
+.checkbox-input{position:absolute;opacity:0;}
+.checkbox-label{display:flex;flex-direction:column;align-items:center;padding:14px 8px;border:2px solid var(--border);border-radius:9px;cursor:pointer;transition:all 0.2s;background:white;text-align:center;gap:7px;}
+.checkbox-input:checked+.checkbox-label{border-color:var(--yellow);background:rgba(253,185,26,0.07);}
+.checkbox-label:hover{border-color:var(--yellow);transform:translateY(-2px);}
+.checkbox-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--black);}
+.checkbox-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.checkbox-text{font-size:12px;font-weight:600;color:var(--text);}
+.btn-continue{width:100%;padding:16px;background:var(--black);color:var(--yellow);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s;letter-spacing:1px;margin-top:8px;font-family:'Noto Sans TC',sans-serif;}
+.btn-continue:hover{background:var(--yellow);color:var(--black);transform:translateY(-2px);box-shadow:0 8px 22px rgba(253,185,26,0.28);}
+
+/* PAGE 2 QUOTE */
+.quote-doc{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 68px);}
+.q-sidebar{background:var(--yellow);padding:44px 28px;color:var(--black);display:flex;flex-direction:column;}
+.q-sidebar-brand{font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;letter-spacing:-1px;margin-bottom:28px;}
+.q-sidebar-doctype{font-size:32px;font-weight:700;line-height:1.1;margin-bottom:52px;}
+.q-sidebar-meta{flex:1;}
+.q-meta-item{margin-bottom:22px;}
+.q-meta-label{font-size:10px;font-weight:700;opacity:0.65;letter-spacing:1.5px;margin-bottom:3px;}
+.q-meta-value{font-size:13px;font-weight:700;}
+.q-sidebar-footer{padding-top:20px;border-top:1px solid rgba(0,0,0,0.12);margin-top:auto;}
+.q-footer-brand{font-size:10px;font-weight:700;letter-spacing:1.5px;margin-bottom:4px;}
+.q-footer-slogan{font-size:10px;opacity:0.75;line-height:1.8;}
+.q-main{padding:44px 52px;background:white;}
+.q-main-header{margin-bottom:22px;}
+.q-main-header h2{font-size:11px;color:var(--lgray);letter-spacing:2px;margin-bottom:4px;}
+.q-main-header h1{font-family:'Fredoka',sans-serif;font-size:34px;color:var(--black);font-weight:700;}
+.qt{width:100%;border-collapse:collapse;margin-bottom:18px;font-size:15px;}
+.qt th{background:var(--warm);padding:11px 13px;text-align:left;font-size:12px;font-weight:700;color:var(--gray);border-bottom:2px solid var(--border);white-space:nowrap;}
+.qt td{padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.qt tr:last-child td{border-bottom:none;}
+.qt .cat-row td{background:rgba(253,185,26,0.09);font-weight:700;font-size:15px;padding:10px 13px;}
+.qt .sub-row td{background:white;}
+.qt .sub-row td:first-child{padding-left:24px;color:var(--lgray);font-size:12px;}
+.num-circle{width:26px;height:26px;background:#FDB91A;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#2D2D2D;}
+.qt .desc-col{color:var(--gray);font-size:13px;}
+.qt .unit-col,.qt .qty-col{width:50px;text-align:center;}
+.qt .price-col,.qt .total-col{width:108px;text-align:right;}
+.q-notes{font-size:13px;color:var(--gray);line-height:2;margin-bottom:16px;padding:15px 20px;background:var(--warm);border-radius:8px;}
+.q-notes-title{font-size:13px;font-weight:700;color:var(--text);letter-spacing:1px;margin-bottom:9px;}
+.q-totals{display:grid;grid-template-columns:1fr 260px;gap:0 28px;align-items:end;}
+.q-total-row{display:flex;justify-content:space-between;padding:11px 0;font-size:15px;border-bottom:1px solid var(--border);}
+.q-total-final{background:#2D2D2D;color:#FDB91A;padding:15px 22px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.q-total-final .lbl{font-size:15px;font-weight:700;}
+.q-total-final .val{font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;}
+.btn-group{display:flex;gap:10px;margin-top:24px;}
+.btn{flex:1;padding:13px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s;border:none;font-family:'Noto Sans TC',sans-serif;}
+.btn-back{background:white;color:var(--text);border:2px solid var(--border);}
+.btn-back:hover{border-color:var(--black);}
+.btn-yellow{background:var(--yellow);color:var(--black);}
+.btn-yellow:hover{background:var(--black);color:var(--yellow);}
+.btn-dark{background:var(--black);color:var(--yellow);}
+.btn-dark:hover{background:var(--yellow);color:var(--black);}
+
+/* PAGE 3 SCHEDULE */
+.schedule-page{padding:40px 56px;max-width:1400px;margin:0 auto;}
+.sch-header{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;}
+.sch-title-wrap h2{font-size:11px;color:var(--lgray);letter-spacing:2px;margin-bottom:2px;}
+.sch-title-wrap h1{font-family:'Fredoka',sans-serif;font-size:34px;font-weight:700;color:var(--black);}
+.sch-meta-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;padding:16px 22px;background:var(--warm);border-radius:10px;}
+.sch-meta-item{display:flex;gap:9px;align-items:flex-start;}
+.sch-meta-icon{width:34px;height:34px;background:white;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);}
+.sch-meta-icon svg{width:16px;height:16px;stroke:var(--black);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.sch-meta-text{font-size:12px;color:var(--gray);}
+.sch-meta-text strong{display:block;color:var(--black);font-size:14px;margin-top:2px;}
+.gantt-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:28px;}
+.gnum{width:26px;height:26px;background:#FDB91A;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#2D2D2D;}
+.proc-flow{display:flex;padding:24px 28px;background:var(--warm);border-radius:10px;justify-content:space-between;position:relative;margin-top:24px;}
+.proc-flow::before{content:'';position:absolute;top:44px;left:56px;right:56px;height:1px;background:var(--border);}
+.proc-step{flex:1;text-align:center;position:relative;z-index:1;}
+.proc-icon{width:32px;height:32px;background:white;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 7px;}
+.proc-icon svg{width:14px;height:14px;stroke:var(--black);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.proc-step.act .proc-icon{background:#FDB91A;border-color:#FDB91A;}
+.proc-name{font-size:11px;font-weight:700;color:var(--black);margin-bottom:1px;}
+.proc-days{font-size:10px;color:var(--gray);}
+
+/* ══ MOBILE RESPONSIVE ══ */
+@media (max-width: 768px) {
+  /* NAV */
+  .nav-container{padding:0 20px;height:60px;}
+  .logo{font-size:22px;}
+  .progress-step{width:30px;height:3px;}
+  
+  /* PAGE 1 - FORM */
+  .form-page-centered{padding:24px 16px 40px;}
+  .form-card{padding:32px 24px;border-radius:12px;}
+  .form-card-title{font-size:26px;}
+  .checkbox-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .checkbox-label{padding:12px 6px;}
+  .checkbox-text{font-size:11px;}
+  
+  /* PAGE 2 - QUOTE */
+  .quote-doc{grid-template-columns:1fr;min-height:auto;}
+  .q-sidebar{padding:24px 20px;}
+  .q-sidebar-brand{font-size:22px;margin-bottom:16px;}
+  .q-sidebar-doctype{font-size:24px;margin-bottom:24px;}
+  .q-meta-item{margin-bottom:16px;}
+  .q-main{padding:24px 20px;}
+  .q-main-header h1{font-size:26px;}
+  
+  /* TABLE - 橫向捲動 */
+  .qt-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:0 20px;}
+  .qt{min-width:600px;font-size:13px;}
+  .qt th{padding:8px 10px;font-size:11px;}
+  .qt td{padding:8px 10px;font-size:13px;}
+  .qt .cat-row td{font-size:13px;}
+  .qt .sub-row td:first-child{padding-left:20px;font-size:11px;}
+  .num-circle{width:22px;height:22px;font-size:11px;}
+  .qt .desc-col{font-size:12px;}
+  .qt .unit-col,.qt .qty-col{width:45px;}
+  .qt .price-col,.qt .total-col{width:90px;}
+  
+  /* NOTES & TOTALS */
+  .q-notes{font-size:12px;padding:12px 16px;margin:0 -20px 16px;border-radius:0;}
+  .q-totals{grid-template-columns:1fr;gap:16px;}
+  .q-total-row{font-size:14px;padding:10px 0;}
+  .q-total-final{padding:12px 18px;margin-top:8px;}
+  .q-total-final .lbl{font-size:14px;}
+  .q-total-final .val{font-size:24px;}
+  
+  /* BUTTONS */
+  .btn-group{flex-direction:column;gap:12px;}
+  .btn{padding:14px;}
+  
+  /* PAGE 3 - SCHEDULE */
+  .schedule-page{padding:24px 20px;}
+  .sch-header{flex-direction:column;align-items:flex-start;gap:12px;}
+  .sch-title-wrap h1{font-size:26px;}
+  .sch-meta-bar{grid-template-columns:1fr;gap:10px;padding:12px 16px;}
+  
+  /* GANTT - 橫向捲動 */
+  .gantt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -20px 24px;border-radius:0;}
+  .gantt-wrap > div{min-width:800px;}
+  
+  /* PROCESS FLOW */
+  .proc-flow{flex-wrap:wrap;padding:16px 12px;}
+  .proc-flow::before{display:none;}
+  .proc-step{min-width:calc(50% - 8px);margin-bottom:12px;}
+  .proc-icon{width:28px;height:28px;}
+  .proc-icon svg{width:12px;height:12px;}
+  .proc-name{font-size:10px;}
+  .proc-days{font-size:9px;}
+}
+
+/* ══ PRINT ══ */
+@media print{
+  @page{size:A4 landscape;margin:8mm 10mm;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
+  html,body{width:100%;height:100%;margin:0;padding:0;background:white!important;overflow:visible!important;}
+  .navbar,.btn-group,.proc-flow{display:none!important;}
+  
+  /* 隱藏第一頁表單，只顯示報價單和工期表 */
+  .page{display:none!important;}
+  #page2,#page3{display:block!important;}
+  #page2{page-break-after:always;page-break-inside:avoid;height:auto;min-height:unset;}
+  #page3{page-break-before:always;page-break-inside:avoid;height:auto;min-height:unset;}
+  
+  /* ═══ 報價單列印優化 ═══ */
+  .quote-doc{
+    display:grid!important;
+    grid-template-columns:140px 1fr!important;
+    width:100%!important;
+    min-height:unset!important;
+    height:auto!important;
+    max-width:none!important;
+  }
+  
+  /* 左側欄優化 */
+  .q-sidebar{
+    background:#FDB91A!important;
+    padding:18px 14px!important;
+    min-height:unset!important;
+    height:100%!important;
+  }
+  .q-sidebar-brand{font-size:18px!important;margin-bottom:12px!important;letter-spacing:-0.5px!important;}
+  .q-sidebar-doctype{font-size:20px!important;margin-bottom:20px!important;line-height:1.1!important;}
+  .q-meta-item{margin-bottom:12px!important;}
+  .q-meta-label{font-size:7.5px!important;margin-bottom:2px!important;}
+  .q-meta-value{font-size:10px!important;}
+  .q-sidebar-footer{margin-top:20px!important;padding-top:12px!important;}
+  .q-footer-brand{font-size:7.5px!important;}
+  .q-footer-slogan{font-size:7.5px!important;}
+  
+  /* 主要內容區優化 */
+  .q-main{
+    padding:18px 24px 18px 24px!important;
+    background:white!important;
+    overflow:visible!important;
+  }
+  .q-main-header{margin-bottom:12px!important;}
+  .q-main-header h2{font-size:9px!important;margin-bottom:2px!important;}
+  .q-main-header h1{font-size:22px!important;}
+  
+  /* 表格優化 - 確保不超出 */
+  .qt{
+    font-size:9.5px!important;
+    width:100%!important;
+    table-layout:fixed!important;
+  }
+  .qt th{
+    font-size:8.5px!important;
+    padding:6px 7px!important;
+    white-space:nowrap!important;
+  }
+  .qt td{
+    padding:6px 7px!important;
+    font-size:9.5px!important;
+    word-wrap:break-word!important;
+  }
+  .qt .cat-row td{
+    background:#FFF4CC!important;
+    font-size:10px!important;
+    padding:7px!important;
+  }
+  .qt .sub-row td:first-child{padding-left:18px!important;}
+  .qt .desc-col{font-size:8.5px!important;line-height:1.3!important;}
+  .num-circle{
+    background:#FDB91A!important;
+    width:16px!important;
+    height:16px!important;
+    font-size:7.5px!important;
+  }
+  
+  /* 備註區 */
+  .q-notes{
+    font-size:8.5px!important;
+    padding:9px 12px!important;
+    background:#F8F8F8!important;
+    line-height:1.7!important;
+    margin-bottom:10px!important;
+  }
+  .q-notes-title{font-size:9px!important;margin-bottom:6px!important;}
+  
+  /* 總計區優化 */
+  .q-totals{
+    grid-template-columns:1fr 180px!important;
+    gap:0 16px!important;
+  }
+  .q-total-row{
+    font-size:10px!important;
+    padding:6px 0!important;
+  }
+  .q-total-final{
+    background:#2D2D2D!important;
+    color:#FDB91A!important;
+    padding:9px 12px!important;
+    margin-top:8px!important;
+  }
+  .q-total-final .lbl{font-size:11px!important;}
+  .q-total-final .val{font-size:17px!important;}
+  
+  /* ═══ 工期表列印優化 ═══ */
+  .schedule-page{
+    padding:14px 18px!important;
+    max-width:none!important;
+    width:100%!important;
+    height:auto!important;
+    overflow:hidden!important;
+  }
+  
+  .sch-header{
+    margin-bottom:8px!important;
+    gap:8px!important;
+  }
+  .sch-title-wrap h2{font-size:8px!important;}
+  .sch-title-wrap h1{font-size:18px!important;}
+  
+  .sch-meta-bar{
+    padding:6px 10px!important;
+    margin-bottom:8px!important;
+    background:#F8F8F8!important;
+    gap:8px!important;
+  }
+  .sch-meta-icon{
+    width:24px!important;
+    height:24px!important;
+  }
+  .sch-meta-icon svg{width:12px!important;height:12px!important;}
+  .sch-meta-text{font-size:8px!important;}
+  .sch-meta-text strong{font-size:9px!important;margin-top:1px!important;}
+  
+  .gantt-wrap{
+    margin-bottom:0!important;
+    border:1px solid #D0D0D0!important;
+    overflow:hidden!important;
+  }
+  .gnum{
+    background:#FDB91A!important;
+    width:16px!important;
+    height:16px!important;
+    font-size:7px!important;
+  }
+  
+  /* 隱藏不必要的元素 */
+  .progress-bar{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="nav-container">
+    <a href="index.html#hero" class="logo" style="text-decoration:none;color:white;cursor:pointer;">TIMBERY</a>
+    <div class="progress-bar">
+      <div class="progress-step active" id="progress1"></div>
+      <div class="progress-step" id="progress2"></div>
+      <div class="progress-step" id="progress3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+  <div class="form-page-centered">
+    <div class="form-card">
+      <div class="form-card-header">
+        <a href="index.html#hero" class="form-card-logo" style="text-decoration:none;color:var(--yellow);cursor:pointer;display:inline-block;">TIMBERY</a>
+        <h1 class="form-card-title">開始您的裝修計畫</h1>
+        <p class="form-card-desc">填寫以下資訊，立即取得專業報價與工期評估</p>
+      </div>
+
+      <div class="form-section">
+        <div class="section-label">基本資料</div>
+        <div class="input-group">
+          <label class="input-label">業主姓名</label>
+          <input type="text" class="input-field" id="clientName" placeholder="請輸入姓名">
+        </div>
+        <div class="input-group">
+          <label class="input-label">室內坪數</label>
+          <input type="number" class="input-field" id="houseSize" placeholder="例如：30" min="1">
+        </div>
+        <div class="input-group">
+          <label class="input-label">房屋類型</label>
+          <select class="input-field" id="houseType">
+            <option value="">請選擇</option>
+            <option value="新成屋">新成屋</option>
+            <option value="中古屋">中古屋</option>
+            <option value="老屋翻新">老屋翻新</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-label">施作區域</div>
+        <div class="checkbox-grid">
+
+          <!-- 玄關：門+鑰匙孔 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_entry" value="玄關">
+            <label class="checkbox-label" for="area_entry">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><rect x="3" y="2" width="18" height="20" rx="2"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><line x1="12" y1="14" x2="12" y2="17"/></svg></div>
+              <div class="checkbox-text">玄關</div>
+            </label>
+          </div>
+
+          <!-- 客廳：沙發輪廓 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_living" value="客廳">
+            <label class="checkbox-label" for="area_living">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M2 10a2 2 0 012-2h1V7a3 3 0 013-3h8a3 3 0 013 3v1h1a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/><path d="M6 16v2m12-2v2"/></svg></div>
+              <div class="checkbox-text">客廳</div>
+            </label>
+          </div>
+
+          <!-- 餐廳：餐桌+椅子 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_dining" value="餐廳">
+            <label class="checkbox-label" for="area_dining">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="3" rx="1"/><line x1="12" y1="11" x2="12" y2="19"/><line x1="8" y1="19" x2="16" y2="19"/><line x1="7" y1="8" x2="7" y2="5"/><line x1="17" y1="8" x2="17" y2="5"/></svg></div>
+              <div class="checkbox-text">餐廳</div>
+            </label>
+          </div>
+
+          <!-- 廚房：鍋子/爐台 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_kitchen" value="廚房">
+            <label class="checkbox-label" for="area_kitchen">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M6 3v4a2 2 0 004 0V3"/><path d="M2 7h20v2a2 2 0 01-2 2H4a2 2 0 01-2-2V7z"/><rect x="4" y="11" width="16" height="9" rx="1"/><line x1="8" y1="15" x2="16" y2="15"/></svg></div>
+              <div class="checkbox-text">廚房</div>
+            </label>
+          </div>
+
+          <!-- 書房：書本 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_study" value="書房">
+            <label class="checkbox-label" for="area_study">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/></svg></div>
+              <div class="checkbox-text">書房</div>
+            </label>
+          </div>
+
+          <!-- 主臥：床鋪 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_master" value="主臥">
+            <label class="checkbox-label" for="area_master">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M3 7v10"/><path d="M21 7v10"/><path d="M3 11h18"/><rect x="5" y="7" width="6" height="4" rx="1"/><rect x="13" y="7" width="6" height="4" rx="1"/><path d="M3 17h18"/></svg></div>
+              <div class="checkbox-text">主臥</div>
+            </label>
+          </div>
+
+          <!-- 次臥：單人床 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_room1" value="次臥">
+            <label class="checkbox-label" for="area_room1">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M3 9v8"/><path d="M21 9v8"/><path d="M3 13h18"/><rect x="5" y="9" width="14" height="4" rx="1"/><path d="M3 17h18"/></svg></div>
+              <div class="checkbox-text">次臥</div>
+            </label>
+          </div>
+
+          <!-- 次臥2 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_room2" value="次臥2">
+            <label class="checkbox-label" for="area_room2">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M3 9v8"/><path d="M21 9v8"/><path d="M3 13h18"/><rect x="5" y="9" width="14" height="4" rx="1"/><path d="M3 17h18"/></svg></div>
+              <div class="checkbox-text">次臥 2</div>
+            </label>
+          </div>
+
+          <!-- 次臥3 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_room3" value="次臥3">
+            <label class="checkbox-label" for="area_room3">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M3 9v8"/><path d="M21 9v8"/><path d="M3 13h18"/><rect x="5" y="9" width="14" height="4" rx="1"/><path d="M3 17h18"/></svg></div>
+              <div class="checkbox-text">次臥 3</div>
+            </label>
+          </div>
+
+          <!-- 更衣室：衣架 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_dressing" value="更衣室">
+            <label class="checkbox-label" for="area_dressing">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><path d="M12 4a2 2 0 100-4 2 2 0 000 4z" fill="currentColor" stroke="none"/><path d="M12 4v3l-8 5h16l-8-5z"/><line x1="4" y1="19" x2="20" y2="19"/><line x1="6" y1="12" x2="6" y2="19"/><line x1="18" y1="12" x2="18" y2="19"/></svg></div>
+              <div class="checkbox-text">更衣室</div>
+            </label>
+          </div>
+
+          <!-- 衛浴：淋浴花灑 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="area_bath" value="衛浴">
+            <label class="checkbox-label" for="area_bath">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><circle cx="10" cy="6" r="3"/><line x1="10" y1="9" x2="10" y2="15"/><line x1="7" y1="15" x2="13" y2="15"/><line x1="7" y1="15" x2="5" y2="20"/><line x1="13" y1="15" x2="15" y2="20"/><line x1="10" y1="15" x2="10" y2="20"/><path d="M17 3c2 2 2 5 0 7"/></svg></div>
+              <div class="checkbox-text">衛浴</div>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-label">施作項目</div>
+        <div class="checkbox-grid">
+
+          <!-- 拆除泥作：牆面敲擊 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="item_demolish" value="拆除泥作">
+            <label class="checkbox-label" for="item_demolish">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><line x1="2" y1="22" x2="22" y2="2"/><path d="M7.5 16.5L3 21"/><rect x="14" y="2" width="5" height="8" rx="1" transform="rotate(45 14 2)"/><line x1="9" y1="15" x2="15" y2="9"/></svg></div>
+              <div class="checkbox-text">拆除泥作</div>
+            </label>
+          </div>
+
+          <!-- 木作 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="item_wood" value="木作工程">
+            <label class="checkbox-label" for="item_wood">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="4" rx="1"/><rect x="2" y="13" width="20" height="4" rx="1"/><line x1="6" y1="6" x2="6" y2="20"/><line x1="18" y1="6" x2="18" y2="20"/></svg></div>
+              <div class="checkbox-text">木作工程</div>
+            </label>
+          </div>
+
+          <!-- 水電：插頭/電 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="item_water" value="水電工程">
+            <label class="checkbox-label" for="item_water">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><polyline points="13 2 13 9 20 9 11 22 11 15 4 15 13 2"/></svg></div>
+              <div class="checkbox-text">水電工程</div>
+            </label>
+          </div>
+
+          <!-- 油漆：滾筒 -->
+          <div class="checkbox-card">
+            <input type="checkbox" class="checkbox-input" id="item_paint" value="油漆工程">
+            <label class="checkbox-label" for="item_paint">
+              <div class="checkbox-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="13" height="8" rx="2"/><rect x="4" y="6" width="9" height="5" rx="1"/><line x1="8" y1="11" x2="8" y2="16"/><rect x="6" y="16" width="4" height="5" rx="1"/></svg></div>
+              <div class="checkbox-text">油漆工程</div>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="btn-continue" onclick="generateQuote()">生成報價單 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: QUOTE -->
+<div class="page" id="page2">
+  <div class="quote-doc">
+    <div class="q-sidebar">
+      <a href="index.html#hero" class="q-sidebar-brand" style="text-decoration:none;color:var(--black);cursor:pointer;display:block;">TIMBERY</a>
+      <div class="q-sidebar-doctype">報價單</div>
+      <div class="q-sidebar-meta">
+        <div class="q-meta-item"><div class="q-meta-label">專案名稱</div><div class="q-meta-value" id="qProject">-</div></div>
+        <div class="q-meta-item"><div class="q-meta-label">業主名稱</div><div class="q-meta-value" id="qClient">-</div></div>
+        <div class="q-meta-item"><div class="q-meta-label">報價日期</div><div class="q-meta-value" id="qDate">-</div></div>
+        <div class="q-meta-item"><div class="q-meta-label">有效期限</div><div class="q-meta-value" id="qExpiry">-</div></div>
+      </div>
+      <div class="q-sidebar-footer">
+        <div class="q-footer-brand">TIMBERY INTERIOR DESIGN</div>
+        <div class="q-footer-slogan">專業·細節·質感·木構</div>
+      </div>
+    </div>
+    <div class="q-main">
+      <div class="q-main-header">
+        <h2>PROJECT QUOTATION</h2>
+        <h1>專案報價單</h1>
+      </div>
+      <div class="qt-wrapper">
+      <table class="qt">
+        <thead>
+          <tr>
+            <th style="width:52px">項次</th>
+            <th style="width:140px">工程項目</th>
+            <th>工程內容說明</th>
+            <th style="width:44px;text-align:center">單位</th>
+            <th style="width:44px;text-align:center">數量</th>
+            <th style="width:96px;text-align:right">單價</th>
+            <th style="width:96px;text-align:right">金額</th>
+          </tr>
+        </thead>
+        <tbody id="quoteBody"></tbody>
+      </table>
+      </div>
+      <div class="q-totals">
+        <div class="q-notes">
+          <div class="q-notes-title">備註 | NOTES</div>
+          · 本報價單不含家具、家電及裝飾燈購置及設計費用。<br>
+          · 若變更設計樣式需加工費，需另行報價。<br>
+          · 付款方式依合約約定的付款階段。<br>
+          · 本報價單為估價用，實際價格需依完工狀況及變更內容為準。
+        </div>
+        <div>
+          <div class="q-total-row"><span>未稅總金額</span><span id="qSubtotal">NTD 0</span></div>
+          <div class="q-total-row"><span>營業稅（5%）</span><span id="qTax">NTD 0</span></div>
+          <div class="q-total-final">
+            <span class="lbl">總計金額（含稅）</span>
+            <span class="val" id="qTotal">NTD 0</span>
+          </div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-back" onclick="showPage(1)">← 重新填寫</button>
+        <button class="btn btn-yellow" onclick="showPage(3)">查看工期表 →</button>
+        <button class="btn btn-dark" onclick="printAll()">列印報價單 + 工期表</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: SCHEDULE -->
+<div class="page" id="page3">
+  <div class="schedule-page">
+    <div class="sch-header">
+      <div class="sch-title-wrap">
+        <h2>PROJECT SCHEDULE</h2>
+        <h1>工期表</h1>
+      </div>
+    </div>
+    <div class="sch-meta-bar">
+      <div class="sch-meta-item">
+        <div class="sch-meta-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg></div>
+        <div class="sch-meta-text">專案名稱<strong id="schName">-</strong></div>
+      </div>
+      <div class="sch-meta-item">
+        <div class="sch-meta-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="sch-meta-text">開工日期<strong id="schStart">-</strong></div>
+      </div>
+      <div class="sch-meta-item">
+        <div class="sch-meta-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="sch-meta-text">預計工期<strong id="schDays">-</strong></div>
+      </div>
+      <div class="sch-meta-item">
+        <div class="sch-meta-icon"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="3"/><path d="M4 4l16 4-16 4"/></svg></div>
+        <div class="sch-meta-text">預計完工<strong id="schEnd">-</strong></div>
+      </div>
+    </div>
+    <div class="gantt-wrap" id="ganttWrap"></div>
+    <div class="proc-flow">
+      <div class="proc-step act">
+        <div class="proc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="proc-name">設計確認</div><div class="proc-days">5–7 日</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="proc-name">工程估約</div><div class="proc-days">3–5 日</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-icon"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-2"/></svg></div>
+        <div class="proc-name">備料進場</div><div class="proc-days">3–5 日</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-icon"><svg viewBox="0 0 24 24"><path d="M15 4l5 5-9 9-2-2"/><path d="M6 8l-3 3 2 2 3-3"/></svg></div>
+        <div class="proc-name">施工階段</div><div class="proc-days" id="procDays">-</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="proc-name">完工驗收</div><div class="proc-days">2–3 日</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="proc-name">交屋</div><div class="proc-days">1 日</div>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-back" onclick="showPage(2)">← 返回報價單</button>
+      <button class="btn btn-dark" onclick="printAll()">列印報價單 + 工期表</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORK_CFG={
+  '保護工程':{perPing:600,  days:2, required:true, desc:'地板、牆面、門框等成品保護'},
+  '拆除泥作':{perPing:6000, days:10,required:false,desc:'隔間、地坪、天花板拆除及清運處理'},
+  '木作工程':{perPing:6000, days:18,required:false,desc:'輕鋼架天花板、造型牆面、門片製作'},
+  '水電工程':{perPing:1500, days:10,required:false,desc:'給排水配管、電路配置、設備安裝'},
+  '油漆工程':{perPing:2500, days:7, required:false,desc:'批土、底漆、面漆及木作表面塗裝'},
+  '櫃體工程':{perPing:0,   days:0, required:true, desc:'依區域客製化系統櫃體含五金配件'},
+  '清潔工程':{perPing:500, days:2, required:true, desc:'工程完工後全室細部清潔'},
+};
+const WORK_ORDER=['保護工程','拆除泥作','木作工程','水電工程','油漆工程','櫃體工程','清潔工程'];
+const CABINET_PRICE={'玄關':80000,'客廳':100000,'餐廳':80000,'廚房':80000,'書房':80000,'主臥':150000,'次臥':80000,'次臥2':80000,'次臥3':80000,'更衣室':80000,'衛浴':50000};
+let G={};
+
+function showPage(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page'+n).classList.add('active');
+  for(let i=1;i<=3;i++){const el=document.getElementById('progress'+i);if(i<=n)el.classList.add('active');else el.classList.remove('active');}
+  window.scrollTo(0,0);
+}
+const fmtD=d=>d.toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'});
+const addDays=(d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
+const addMonths=(d,n)=>{const r=new Date(d);r.setMonth(r.getMonth()+n);return r;};
+// 計算工作日（跳過週末）
+const addWorkDays=(start,days)=>{
+  let d=new Date(start);
+  let added=0;
+  while(added<days){
+    d.setDate(d.getDate()+1);
+    if(d.getDay()!==0&&d.getDay()!==6)added++;
+  }
+  return d;
+};
+
+function generateQuote(){
+  const clientName=document.getElementById('clientName').value.trim();
+  const houseSize=parseFloat(document.getElementById('houseSize').value);
+  const houseType=document.getElementById('houseType').value;
+  if(!clientName||!houseSize||!houseType){alert('請填寫所有必填欄位');return;}
+  const areas=[];
+  document.querySelectorAll('[id^="area_"]:checked').forEach(cb=>areas.push(cb.value));
+  const selectedWork=[];
+  document.querySelectorAll('[id^="item_"]:checked').forEach(cb=>selectedWork.push(cb.value));
+  const mult=houseType==='老屋翻新'?1.3:houseType==='中古屋'?1.15:1;
+  let quoteRows=[],ganttItems=[],subtotal=0,catNum=1;
+  WORK_ORDER.forEach(wName=>{
+    const cfg=WORK_CFG[wName];
+    if(!cfg.required&&!selectedWork.includes(wName))return;
+    if(wName==='櫃體工程'){
+      let total=0;
+      (areas.length?areas:['整體']).forEach(a=>{total+=(CABINET_PRICE[a]||80000);});
+      quoteRows.push({type:'cat',num:catNum,name:'櫃體工程',desc:cfg.desc});
+      quoteRows.push({type:'sub',num:catNum,name:'各空間櫃體',desc:'依施作區域加總',unit:'式',qty:1,unitPrice:total,total});
+      subtotal+=total;
+      // 櫃體工程：每8萬元約需1天，最少2天
+      const cabinetDays=Math.max(2,Math.round(total/80000));
+      ganttItems.push({name:'櫃體工程',days:cabinetDays});
+    }else{
+      const price=Math.round(cfg.perPing*houseSize*mult);
+      quoteRows.push({type:'cat',num:catNum,name:wName,desc:cfg.desc});
+      quoteRows.push({type:'sub',num:catNum,name:wName,desc:cfg.desc,unit:'式',qty:1,unitPrice:price,total:price});
+      subtotal+=price;
+      // 其他工程：根據坪數動態調整工期（基礎天數 + 每10坪加成）
+      let workDays=cfg.days;
+      if(cfg.perPing>0 && houseSize>20){
+        // 超過20坪的部分，每10坪增加工期
+        const extraPing=houseSize-20;
+        const extraDays=Math.ceil(extraPing/10)*Math.ceil(cfg.days*0.1); // 每10坪增加基礎工期的10%
+        workDays=cfg.days+extraDays;
+      }
+      ganttItems.push({name:wName,days:workDays});
+    }
+    catNum++;
+  });
+  const tax=Math.round(subtotal*0.05);
+  const total=subtotal+tax;
+  const totalDays=ganttItems.reduce((s,i)=>s+i.days,0);
+  const today=new Date();
+  const startDate=addMonths(today,1);
+  const endDate=addWorkDays(startDate,totalDays); // 使用工作日計算
+  const projectName=clientName+' 室內設計案';
+  G={clientName,houseSize,houseType,areas,quoteRows,ganttItems,subtotal,tax,total,totalDays,today,startDate,endDate,projectName};
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('qProject',projectName);set('qClient',clientName);set('qDate',fmtD(today));set('qExpiry',fmtD(addMonths(today,1)));
+  set('schName',projectName);set('schStart',fmtD(startDate));set('schDays',totalDays+' 個工作天');set('schEnd',fmtD(endDate));
+  set('procDays',totalDays+' 日');
+  renderQuoteTable();
+  renderGantt(false); // false = 螢幕模式
+  showPage(2);
+}
+
+function renderQuoteTable(){
+  const tbody=document.getElementById('quoteBody');
+  tbody.innerHTML='';
+  let subIdx={};
+  G.quoteRows.forEach(r=>{
+    const tr=document.createElement('tr');
+    if(r.type==='cat'){
+      tr.className='cat-row';
+      tr.innerHTML=`<td><span class="num-circle">${String(r.num).padStart(2,'0')}</span></td><td colspan="6" style="font-weight:700">${r.name}</td>`;
+    }else{
+      if(!subIdx[r.num])subIdx[r.num]=0;subIdx[r.num]++;
+      tr.className='sub-row';
+      tr.innerHTML=`<td>${String(r.num).padStart(2,'0')}.${subIdx[r.num]}</td><td>${r.name}</td><td class="desc-col">${r.desc}</td><td style="text-align:center">${r.unit}</td><td style="text-align:center">${r.qty}</td><td style="text-align:right">${r.unitPrice.toLocaleString()}</td><td style="text-align:right;font-weight:600">${r.total.toLocaleString()}</td>`;
+    }
+    tbody.appendChild(tr);
+  });
+  document.getElementById('qSubtotal').textContent='NTD '+G.subtotal.toLocaleString();
+  document.getElementById('qTax').textContent='NTD '+G.tax.toLocaleString();
+  document.getElementById('qTotal').textContent='NTD '+G.total.toLocaleString();
+}
+
+function renderGantt(printMode){
+  const wrap=document.getElementById('ganttWrap');
+  wrap.innerHTML='';
+
+  // 左欄固定寬度（列印時縮小）
+  const isP=printMode===true;
+  const COL_NUM=isP?36:42, COL_NAME=isP?95:125, COL_DATE=isP?80:95, COL_DAYS=isP?38:48;
+  const LEFT=COL_NUM+COL_NAME+COL_DATE+COL_DAYS;
+
+  // 右欄圖表寬度：列印模式必須非常保守
+  // A4 landscape 實測：左欄249px + 圖表550px + 邊距 = 約850px < 960px安全範圍
+  const wrapW=isP?550:(wrap.offsetWidth||900);
+  const CHART_W=Math.max(300, wrapW-4);
+
+  const startDate=G.startDate;
+  const endDate=addWorkDays(startDate,G.totalDays); // 使用工作日計算結束日期
+  const MS=Math.max(+endDate-+startDate,1);
+
+  // 週列表 - 確保涵蓋所有工作日
+  const weeks=[];
+  let ws=new Date(startDate);
+  const dow0=ws.getDay();
+  if(dow0!==1) ws.setDate(ws.getDate()-(dow0===0?6:dow0-1));
+  const endWeek=new Date(endDate);
+  endWeek.setDate(endWeek.getDate()+7); // 多加一週確保不會切掉
+  while(ws<endWeek){weeks.push({start:new Date(ws),end:addDays(ws,6)});ws=addDays(ws,7);}
+  const nWeeks=Math.max(weeks.length,1);
+
+  // 每週欄寬：列印時最少28px，螢幕最少36px
+  const minColW=isP?28:36;
+  const colW=Math.max(minColW, Math.floor(CHART_W/nWeeks));
+  const totalChartW=colW*nWeeks;
+
+  const dateToX=d=>((Math.max(+d,+startDate)-+startDate)/MS)*totalChartW;
+
+  const ROW_H=isP?36:46, HEAD_H=isP?38:48;
+  const FS=isP?'11px':'13px', FS_SM=isP?'9px':'11px', FS_HEAD=isP?'10px':'12px';
+
+  const c=document.createElement('div');
+  c.style.cssText='display:flex;flex-direction:column;width:100%;';
+
+  // ── HEADER ──
+  const hRow=document.createElement('div');
+  hRow.style.cssText=`display:flex;background:#F5F5F5;border-bottom:2px solid #E0E0E0;min-height:${HEAD_H}px;`;
+  const hL=document.createElement('div');
+  hL.style.cssText=`display:flex;flex-shrink:0;border-right:1px solid #E0E0E0;align-items:center;`;
+  hL.innerHTML=`
+    <div style="width:${COL_NUM}px;padding:0 6px 0 10px;font-size:${FS_HEAD};font-weight:700;color:#666;flex-shrink:0;">階段</div>
+    <div style="width:${COL_NAME}px;padding:0 8px;font-size:${FS_HEAD};font-weight:700;color:#666;flex-shrink:0;">工作項目</div>
+    <div style="width:${COL_DATE}px;padding:0 8px;font-size:${FS_HEAD};font-weight:700;color:#666;flex-shrink:0;">日期區間</div>
+    <div style="width:${COL_DAYS}px;padding:0 8px;font-size:${FS_HEAD};font-weight:700;color:#666;flex-shrink:0;">工期</div>`;
+  hRow.appendChild(hL);
+  const hR=document.createElement('div');
+  hR.style.cssText=`position:relative;overflow:hidden;height:${HEAD_H}px;width:${totalChartW}px;flex-shrink:0;`;
+  weeks.forEach((wk,wi)=>{
+    const x=wi*colW;
+    const wn=document.createElement('div');
+    wn.style.cssText=`position:absolute;top:50%;transform:translateY(-50%);left:${x+4}px;font-size:${FS_SM};font-weight:700;color:#555;white-space:nowrap;overflow:hidden;max-width:${colW-6}px;`;
+    wn.textContent=`W${String(wi+1).padStart(2,'0')}`;
+    hR.appendChild(wn);
+    if(wi>0){const sep=document.createElement('div');sep.style.cssText=`position:absolute;top:0;bottom:0;left:${x}px;width:1px;background:#E0E0E0;`;hR.appendChild(sep);}
+  });
+  hRow.appendChild(hR);
+  c.appendChild(hRow);
+
+  // ── DATA ROWS ──
+  let cursor=new Date(startDate);
+  G.ganttItems.forEach((item,idx)=>{
+    const rowStart=new Date(cursor);
+    const rowEnd=addWorkDays(rowStart,item.days); // 改用工作日計算
+    cursor=new Date(rowEnd);
+
+    const row=document.createElement('div');
+    row.style.cssText=`display:flex;min-height:${ROW_H}px;border-bottom:${idx===G.ganttItems.length-1?'none':'1px solid #E0E0E0'};`;
+
+    // 左欄
+    const rL=document.createElement('div');
+    rL.style.cssText=`display:flex;flex-shrink:0;border-right:1px solid #E0E0E0;align-items:center;`;
+    const dateRange=`${rowStart.toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'})}–${rowEnd.toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'})}`;
+    rL.innerHTML=`
+      <div style="width:${COL_NUM}px;padding:0 6px 0 10px;flex-shrink:0;display:flex;align-items:center;">
+        <div class="gnum">${String(idx+1).padStart(2,'0')}</div>
+      </div>
+      <div style="width:${COL_NAME}px;padding:0 8px;font-size:${FS};font-weight:600;color:#333;flex-shrink:0;">${item.name}</div>
+      <div style="width:${COL_DATE}px;padding:0 8px;font-size:${isP?'9px':'11px'};color:#666;flex-shrink:0;">${dateRange}</div>
+      <div style="width:${COL_DAYS}px;padding:0 8px;font-size:${FS};color:#666;flex-shrink:0;">${item.days}天</div>`;
+    row.appendChild(rL);
+
+    // 右欄（固定寬度，不 flex:1，避免列印時撐爆）
+    const rR=document.createElement('div');
+    rR.style.cssText=`position:relative;width:${totalChartW}px;flex-shrink:0;min-height:${ROW_H}px;`;
+
+    // 週分隔
+    weeks.forEach((wk,wi)=>{
+      if(wi>0){
+        const sep=document.createElement('div');
+        sep.style.cssText=`position:absolute;top:0;bottom:0;left:${wi*colW}px;width:1px;background:#E0E0E0;opacity:0.4;`;
+        rR.appendChild(sep);
+      }
+    });
+
+    // 長條
+    const x1=dateToX(rowStart);
+    const x2=dateToX(rowEnd);
+    const bw=Math.max(x2-x1,6);
+    const bar=document.createElement('div');
+    bar.style.cssText=`position:absolute;top:50%;transform:translateY(-50%);left:${x1}px;width:${bw}px;height:22px;background:#FDB91A;border-radius:11px;-webkit-print-color-adjust:exact;print-color-adjust:exact;overflow:visible;display:flex;align-items:center;padding:0 8px;box-sizing:border-box;`;
+
+    // 文字顯示策略（確保所有項目都顯示文字且不超出）
+    const availRight=totalChartW-x1-bw; // 長條右側剩餘空間
+    const isLastItem=(idx===G.ganttItems.length-1); // 是否為最後項目
+    
+    if(bw>=50){
+      // 長條夠寬：文字在長條內
+      bar.innerHTML=`<span style="font-size:11px;font-weight:700;color:#2D2D2D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</span>`;
+    } else {
+      // 長條太窄：根據右側空間決定文字位置
+      if(availRight>=30){
+        // 右側有空間：文字在長條右側
+        const lbl=document.createElement('div');
+        lbl.style.cssText=`position:absolute;left:${x1+bw+4}px;top:50%;transform:translateY(-50%);font-size:${isP?'9px':'10px'};font-weight:700;color:#333;white-space:nowrap;max-width:${Math.min(availRight-4,100)}px;overflow:hidden;text-overflow:ellipsis;`;
+        lbl.textContent=item.name;
+        rR.appendChild(lbl);
+      } else if(bw>=15){
+        // 長條有一定寬度：文字在長條內，字體更小
+        const fontSize=isP?'7px':'8px';
+        bar.innerHTML=`<span style="font-size:${fontSize};font-weight:700;color:#2D2D2D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${bw+Math.min(availRight,20)}px;">${item.name}</span>`;
+      } else {
+        // 長條很窄：文字在長條上方，確保不超出右邊界
+        const lbl=document.createElement('div');
+        // 計算文字寬度（約 4 字 × 9px = 36px）
+        const estimatedTextWidth=isP?32:36;
+        // 確保文字右邊不超出 totalChartW
+        const maxLeft=totalChartW-estimatedTextWidth;
+        const leftPos=isLastItem?
+          Math.min(Math.max(totalChartW-estimatedTextWidth-5,x1),maxLeft):
+          Math.max(0,Math.min(x1-10,maxLeft));
+        lbl.style.cssText=`position:absolute;left:${leftPos}px;top:${isP?'3px':'5px'};font-size:${isP?'7.5px':'8.5px'};font-weight:700;color:#222;white-space:nowrap;background:rgba(255,255,255,0.95);padding:${isP?'1px 4px':'2px 5px'};border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,0.1);z-index:10;max-width:${estimatedTextWidth}px;overflow:hidden;text-overflow:ellipsis;`;
+        lbl.textContent=item.name;
+        rR.appendChild(lbl);
+      }
+    }
+    rR.appendChild(bar);
+    row.appendChild(rR);
+    c.appendChild(row);
+  });
+
+  // ── FOOTER ──
+  const foot=document.createElement('div');
+  foot.style.cssText='display:flex;border-top:2px solid #E0E0E0;background:#F5F5F5;';
+  const fL=document.createElement('div');
+  fL.style.cssText=`display:flex;flex-shrink:0;border-right:1px solid #E0E0E0;align-items:center;padding:9px 0;`;
+  fL.innerHTML=`<div style="width:${COL_NUM}px;flex-shrink:0;"></div><div style="width:${COL_NAME}px;padding:0 8px;font-size:13px;font-weight:700;color:#666;flex-shrink:0;">預計完工</div><div style="width:${COL_DATE}px;flex-shrink:0;"></div><div style="width:${COL_DAYS}px;flex-shrink:0;"></div>`;
+  foot.appendChild(fL);
+  const fR=document.createElement('div');
+  fR.style.cssText=`width:${totalChartW}px;flex-shrink:0;padding:9px 12px;font-size:13px;font-weight:700;color:#333;display:flex;align-items:center;`;
+  fR.textContent=fmtD(endDate);
+  foot.appendChild(fR);
+  c.appendChild(foot);
+  wrap.appendChild(c);
+}
+
+function printAll(){
+  // 偵測是否為手機裝置
+  const isMobile = window.innerWidth <= 768;
+  
+  if(isMobile){
+    // 手機版：顯示提示訊息
+    alert('📱 手機列印提示\n\n' +
+          '在手機上，請使用以下方式保存報價單：\n\n' +
+          '方法 1：截圖保存\n' +
+          '• 同時按下電源鍵 + 音量減鍵（Android）\n' +
+          '• 同時按下電源鍵 + Home鍵（iPhone）\n\n' +
+          '方法 2：使用瀏覽器功能\n' +
+          '• 點擊瀏覽器選單 ⋮\n' +
+          '• 選擇「分享」或「列印」\n' +
+          '• 儲存為 PDF\n\n' +
+          '💡 建議使用電腦版網站列印完整報價單');
+    return;
+  }
+  
+  // 桌面版：正常列印
+  // 列印前重新渲染甘特圖（使用列印模式）
+  if(G.ganttItems){
+    renderGantt(true); // true = 列印模式
+  }
+  document.querySelectorAll('.page').forEach(p=>p.style.display='block');
+  window.print();
+  setTimeout(()=>{
+    document.querySelectorAll('.page').forEach(p=>{p.style.display='';});
+    // 列印後恢復螢幕模式
+    if(G.ganttItems){renderGantt(false);}
+  },800);
+}
+</script>
+</body>
+</html>
